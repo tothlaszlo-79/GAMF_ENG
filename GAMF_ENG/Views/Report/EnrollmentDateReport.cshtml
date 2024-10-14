@@ -1,0 +1,33 @@
+﻿@model IEnumerable<EnrollmentDateVM>
+
+@{
+    ViewData["Title"] = "EnrollmentDateReport";
+}
+
+<h2>First applicant report</h2>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                First Applicant Date
+            </th>
+            <th>
+                Students
+            </th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>
+                    @item.EnrollmentDate.ToString("dd-MM-yyyy")
+                </td>
+                <td>
+                    @item.StudentCount
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
