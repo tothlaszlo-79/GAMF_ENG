@@ -20,11 +20,55 @@ namespace GAMF_ENG.Controllers
         }
 
         // GET: Enrollments
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(string sortOrder, string searchString)
         {
-            var gAMFDbContext = _context.Enrollments.Include(e => e.Course).Include(e => e.Student);
-            return View(await gAMFDbContext.ToListAsync());
+            ViewBag.NameSortParam = string.IsNullOrEmpty(sortOrder)
+                ? "NameDesc" : string.Empty;
+            ViewBag.CourseSortParam = sortOrder == "Course"
+                ? "CoursesDesc" : "Course";
+            var enrollments = _context.Enrollments
+                .Include(e => e.Course)
+                .Include(e => e.Student)
+                .AsQueryable();
+
+            if(!string.IsNullOrEmpty(searchString))
+            {
+                enrollments = enrollments.Where(
+                    s => s.Student.LastName.ToUpper().Contains(searchString.ToUpper())  
+                    ||
+                    s.Course.Title.ToUpper().Contains(searchString.ToUpper())
+                    );
+            }
+
+            enrollments = sortOrder switch {
+                "Course" => enrollments.OrderBy(e=> e.Course.Title),
+                "CoursesDesc" => enrollments.OrderByDescending(e => e.Course.Title),
+                "NameDesc" => enrollments.OrderByDescending(e => e.Student.LastName),
+                _ => enrollments.OrderBy(e => e.Student.LastName)
+
+            };
+
+            //var gAMFDbContext = _context.Enrollments.Include(e => e.Course).Include(e => e.Student);
+            return View(await enrollments.ToListAsync());
         }
+
+        public IActionResult Index2() => View();
+
+        public JsonResult GetEnrollments()
+        {
+            var enrollments = _context.Enrollments
+                .Include(_ => _.Course)
+                .Include(_ => _.Student)
+                .Select(e => new EnrollmentListVM { 
+                    CourseTitle = e.Course.Title,
+                    StudentFullName = $"{e.Student.LastName} {e.Student.FirstMidName}",
+                    Grade = e.Grade.ToString()
+                
+                });
+
+            return Json(enrollments.ToList());
+        }
+
 
         // GET: Enrollments/Details/5
         public async Task<IActionResult> Details(int? id)

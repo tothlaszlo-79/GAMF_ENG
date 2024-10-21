@@ -6,42 +6,57 @@
 
 <h1>Index</h1>
 
+<div class="col-md-4">
+    <fieldset class="schduler-border">
+        <legend class="schduler-border">Search</legend>
+        <form asp-action="Index">
+            <div class="form-group">
+                <input name="searchString" class="form-control" placeholder="Name or Course"/>
+            </div>
+            <div class="form-group">
+                <input type="submit" value="Search" class="btn btn-default"/>
+            </div>
+        </form>
+    </fieldset>
+</div>
+
+
 <p>
     <a asp-action="Create">Create New</a>
 </p>
 <table class="table">
-    <thead>
-        <tr>
-            <th>
-                @Html.DisplayNameFor(model => model.Grade)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Course)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Student)
-            </th>
-            <th></th>
-        </tr>
-    </thead>
-    <tbody>
-@foreach (var item in Model) {
-        <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.Grade)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Course.CourseId)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Student.Id)
-            </td>
-            <td>
-                <a asp-action="Edit" asp-route-id="@item.EnrollmentId">Edit</a> |
-                <a asp-action="Details" asp-route-id="@item.EnrollmentId">Details</a> |
-                <a asp-action="Delete" asp-route-id="@item.EnrollmentId">Delete</a>
-            </td>
-        </tr>
-}
-    </tbody>
+  <thead>
+      <tr>
+          <th>
+              <a asp-controller="Enrollments"
+              asp-action="Index"
+              asp-route-sortOrder="@ViewBag.CourseSortParam">Course</a>
+          </th>
+          <th>
+                <a asp-controller="Enrollments"
+                   asp-action="Index"
+                   asp-route-sortOrder="@ViewBag.NameSortParam">Name of the student</a>
+          </th>
+          <th>
+              Grade
+          </th>
+      </tr>
+  </thead>
+  <tbody>
+      @foreach (var item in Model)
+        {
+            <tr>
+                <td>
+                    @item.Course.Title
+                </td>
+                <td>
+                    @item.Student.LastName
+                </td>
+                <td>
+                    @item.Grade
+                </td>
+            </tr>
+
+        }
+  </tbody>
 </table>
